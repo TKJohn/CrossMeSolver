@@ -1,4 +1,4 @@
-package calcMark;
+ï»¿package calcMark;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -92,14 +92,14 @@ public class Board {
 	}
 
 	/**
-	 * ÉèÖÃÄ³µãµÄ×´Ì¬
+	 * è®¾ç½®æŸç‚¹çš„çŠ¶æ€
 	 * 
 	 * @param x
-	 *            ĞĞ×ø±ê
+	 *            è¡Œåæ ‡
 	 * @param y
-	 *            ÁĞ×ø±ê
+	 *            åˆ—åæ ‡
 	 * @param mark
-	 *            'E'-Î´¶¨£»'B'-¸ô¶Ï£»'S'-Í¿É«
+	 *            'E'-æœªå®šï¼›'B'-éš”æ–­ï¼›'S'-æ¶‚è‰²
 	 * 
 	 */
 	public void setPointStatus(Point point, char mark) {
@@ -117,11 +117,11 @@ public class Board {
 	}
 
 	/**
-	 * °´ÕÕ´«ÈëµÄµã×ø±ê£¬ºÍÆåÅÌĞÎ×´£¬Ë³Ğò·µ»ØÏÂÒ»¸öÆåÅÌµã¡£ÏÈÔö¼ÓĞĞ×ø±ê£¬ÔÙÔö¼ÓÁĞ×ø±ê
+	 * æŒ‰ç…§ä¼ å…¥çš„ç‚¹åæ ‡ï¼Œå’Œæ£‹ç›˜å½¢çŠ¶ï¼Œé¡ºåºè¿”å›ä¸‹ä¸€ä¸ªæ£‹ç›˜ç‚¹ã€‚å…ˆå¢åŠ è¡Œåæ ‡ï¼Œå†å¢åŠ åˆ—åæ ‡
 	 * 
 	 * @param point
-	 *            ´«Èëµã
-	 * @return ´«³öµã.null-²ÎÊı´íÎó.´«Èëµã-´«ÈëÒÑ¾­ÊÇ×îºóÒ»µã
+	 *            ä¼ å…¥ç‚¹
+	 * @return ä¼ å‡ºç‚¹.null-å‚æ•°é”™è¯¯.ä¼ å…¥ç‚¹-ä¼ å…¥å·²ç»æ˜¯æœ€åä¸€ç‚¹
 	 */
 	public Point getNextPoint(Point point) {
 		int x = point.getX();
@@ -131,27 +131,27 @@ public class Board {
 			return new Point(0, 0);
 		}
 
-		// µ±Ç°ĞĞ×îºóÒ»µã
+		// å½“å‰è¡Œæœ€åä¸€ç‚¹
 		if (this.width - 1 == x) {
-			// ²»ÊÇ×îºóÒ»ĞĞ
+			// ä¸æ˜¯æœ€åä¸€è¡Œ
 			if (this.height - 1 != y) {
 				return new Point(0, y + 1);
 			} else {
-				// ×îºóÒ»ĞĞ
+				// æœ€åä¸€è¡Œ
 				return point;
 			}
 		}
 
-		// ²»ÊÇĞĞ×îºóÒ»µã£¬Ö±½ÓÔö¼Óºá×ø±ê
+		// ä¸æ˜¯è¡Œæœ€åä¸€ç‚¹ï¼Œç›´æ¥å¢åŠ æ¨ªåæ ‡
 		return new Point(x + 1, y);
 	}
 
 	/**
-	 * ¸ù¾İ¸ø¶¨ĞĞºÅ£¬»ñÈ¡¸ÃĞĞµÄÆåÅÌËùÌî×´Ì¬Êı¾İ
+	 * æ ¹æ®ç»™å®šè¡Œå·ï¼Œè·å–è¯¥è¡Œçš„æ£‹ç›˜æ‰€å¡«çŠ¶æ€æ•°æ®
 	 * 
 	 * @param rowNo
-	 *            ¸ø¶¨ĞĞºÅ
-	 * @return ¸ÃĞĞÌîĞ´×´Ì¬
+	 *            ç»™å®šè¡Œå·
+	 * @return è¯¥è¡Œå¡«å†™çŠ¶æ€
 	 */
 	public char[] getRow(int rowNo) {
 		char[] result = new char[this.width];
@@ -162,31 +162,31 @@ public class Board {
 	}
 
 	/**
-	 * ¸ù¾İ¸ø¶¨ÁĞºÅ£¬»ñÈ¡¸ÃÁĞµÄÆåÅÌËùÌî×´Ì¬Êı¾İ
+	 * æ ¹æ®ç»™å®šåˆ—å·ï¼Œè·å–è¯¥åˆ—çš„æ£‹ç›˜æ‰€å¡«çŠ¶æ€æ•°æ®
 	 * 
 	 * @param columnNo
-	 *            ¸ø¶¨ÁĞºÅ
-	 * @return ¸ÃÁĞÌîĞ´×´Ì¬
+	 *            ç»™å®šåˆ—å·
+	 * @return è¯¥åˆ—å¡«å†™çŠ¶æ€
 	 */
 	public char[] getColumn(int columnNo) {
 		return this.boardData[columnNo];
 	}
 
 	/**
-	 * ´òÓ¡µ±Ç°ÆåÅÌ×´Ì¬¡£Î´¶¨¡¢¸ô¶Ï¡¢Í¿É«
+	 * æ‰“å°å½“å‰æ£‹ç›˜çŠ¶æ€ã€‚æœªå®šã€éš”æ–­ã€æ¶‚è‰²
 	 */
 	public void printBoard() {
 		for (int j = 0; j < height; j++) {
 			for (int i = 0; i < width; i++) {
 				switch (boardData[i][j]) {
 				case Status.BLANK:
-					System.out.print("¡õ");
+					System.out.print("â–¡");
 					break;
 				case Status.BLOCK:
 					System.out.print("x");
 					break;
 				case Status.SOLVE:
-					System.out.print("¡ö");
+					System.out.print("â– ");
 					break;
 				default:
 					break;
@@ -197,11 +197,11 @@ public class Board {
 	}
 
 	/**
-	 * ¸ù¾İ¸ø¶¨×ø±ê£¬¼ì²é¸ÃµãËùÔÚĞĞ¡¢ÁĞÊÇ·ñÆ¥Åä¸ø¶¨Ìõ¼ş
+	 * æ ¹æ®ç»™å®šåæ ‡ï¼Œæ£€æŸ¥è¯¥ç‚¹æ‰€åœ¨è¡Œã€åˆ—æ˜¯å¦åŒ¹é…ç»™å®šæ¡ä»¶
 	 * 
 	 * @param point
-	 *            ¸ø¶¨µã
-	 * @return -1£º¼ì²é³ö´íÎó£»0-Î´¼ì²é³ö´íÎó£¬µ«»¹Î´Íê³É£»1-ÍêÈ«ok
+	 *            ç»™å®šç‚¹
+	 * @return -1ï¼šæ£€æŸ¥å‡ºé”™è¯¯ï¼›0-æœªæ£€æŸ¥å‡ºé”™è¯¯ï¼Œä½†è¿˜æœªå®Œæˆï¼›1-å®Œå…¨ok
 	 */
 	public int check(Point point) {
 		int x = point.getX();
@@ -235,24 +235,24 @@ public class Board {
 	};
 
 	/**
-	 * ½«¸ø¶¨Êı×ÖÊı×é£¨Ò»Î»ÕûÊı£©Æ´½ÓÎªÎŞ·Ö¸ô×Ö·û´®
+	 * å°†ç»™å®šæ•°å­—æ•°ç»„ï¼ˆä¸€ä½æ•´æ•°ï¼‰æ‹¼æ¥ä¸ºæ— åˆ†éš”å­—ç¬¦ä¸²
 	 * 
 	 * @param marks
-	 *            Êı×ÖÊı×é
-	 * @return Æ´½ÓÎŞ·Ö¸ô×Ö·û´®
+	 *            æ•°å­—æ•°ç»„
+	 * @return æ‹¼æ¥æ— åˆ†éš”å­—ç¬¦ä¸²
 	 */
 	private String array2String(char[] marks) {
 		return new String(marks);
 	}
 
 	/**
-	 * ¸ù¾İ¸ø¶¨µÄµ¥ĞĞ\ÁĞÌõ¼ş£¬µÃµ½¶ÔÓ¦µÄÍê³ÉÆ¥ÅäÕıÔò±í´ïÊ½
+	 * æ ¹æ®ç»™å®šçš„å•è¡Œ\åˆ—æ¡ä»¶ï¼Œå¾—åˆ°å¯¹åº”çš„å®ŒæˆåŒ¹é…æ­£åˆ™è¡¨è¾¾å¼
 	 * <p>
-	 * ²»·ûºÏ²»Ò»¶¨´íÎó£¬·ûºÏ±£Ö¤ÕıÈ·
+	 * ä¸ç¬¦åˆä¸ä¸€å®šé”™è¯¯ï¼Œç¬¦åˆä¿è¯æ­£ç¡®
 	 * 
 	 * @param conditions
-	 *            Ìõ¼şList //5 2 3 4~~
-	 * @return Íê³ÉÆ¥ÅäÕıÔò±í´ïÊ½. ¶ÔÓÚ 3 2 µÄÊäÈë£ºB*S{3}B+S{2}B*
+	 *            æ¡ä»¶List //5 2 3 4~~
+	 * @return å®ŒæˆåŒ¹é…æ­£åˆ™è¡¨è¾¾å¼. å¯¹äº 3 2 çš„è¾“å…¥ï¼šB*S{3}B+S{2}B*
 	 */
 	private String getSolvedMatchStr(List<Integer> conditions) {
 		if (null == conditions || 0 == conditions.size()) {
@@ -274,13 +274,13 @@ public class Board {
 	}
 
 	/**
-	 * ¸ù¾İ¸ø¶¨µÄµ¥ĞĞ\ÁĞÌõ¼ş£¬µÃµ½¶ÔÓ¦µÄ²¿·ÖÆ¥ÅäÕıÔò±í´ïÊ½
+	 * æ ¹æ®ç»™å®šçš„å•è¡Œ\åˆ—æ¡ä»¶ï¼Œå¾—åˆ°å¯¹åº”çš„éƒ¨åˆ†åŒ¹é…æ­£åˆ™è¡¨è¾¾å¼
 	 * <p>
-	 * ²»·ûºÏÒ»¶¨´íÎó£¬·ûºÏ²»Ò»¶¨ÕıÈ·
+	 * ä¸ç¬¦åˆä¸€å®šé”™è¯¯ï¼Œç¬¦åˆä¸ä¸€å®šæ­£ç¡®
 	 * 
 	 * @param conditions
-	 *            Ìõ¼şList //5 2 3 4~~
-	 * @return ²¿·ÖÆ¥ÅäÕıÔò±í´ïÊ½ for 3 2£¬µÃµ½ [EB]*[ES]{3}[EB]+[ES]{2}[EB]*
+	 *            æ¡ä»¶List //5 2 3 4~~
+	 * @return éƒ¨åˆ†åŒ¹é…æ­£åˆ™è¡¨è¾¾å¼ for 3 2ï¼Œå¾—åˆ° [EB]*[ES]{3}[EB]+[ES]{2}[EB]*
 	 */
 	private String getSolvingMatchStr(List<Integer> conditions) {
 		if (null == conditions || 0 == conditions.size()) {
@@ -302,7 +302,7 @@ public class Board {
 	}
 
 	/**
-	 * »ñÈ¡¸ø¶¨µÄ¸÷ĞĞÔ­Ê¼Ìõ¼ş£¬±£´æ²¢Ëã³ö¸÷ĞĞµÄÆ¥ÅäÓÃÕıÔò±í´ïÊ½
+	 * è·å–ç»™å®šçš„å„è¡ŒåŸå§‹æ¡ä»¶ï¼Œä¿å­˜å¹¶ç®—å‡ºå„è¡Œçš„åŒ¹é…ç”¨æ­£åˆ™è¡¨è¾¾å¼
 	 * 
 	 * @param rowConditions
 	 */
@@ -324,7 +324,7 @@ public class Board {
 	}
 
 	/**
-	 * »ñÈ¡¸ø¶¨µÄ¸÷ÁĞÔ­Ê¼Ìõ¼ş£¬±£´æ²¢Ëã³ö¸÷ÁĞµÄÆ¥ÅäÓÃÕıÔò±í´ïÊ½
+	 * è·å–ç»™å®šçš„å„åˆ—åŸå§‹æ¡ä»¶ï¼Œä¿å­˜å¹¶ç®—å‡ºå„åˆ—çš„åŒ¹é…ç”¨æ­£åˆ™è¡¨è¾¾å¼
 	 * 
 	 * @param columnConditions
 	 */

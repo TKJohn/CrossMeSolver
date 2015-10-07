@@ -1,4 +1,4 @@
-package calcMark;
+ï»¿package calcMark;
 
 public class Calculator implements Runnable {
 
@@ -45,24 +45,24 @@ public class Calculator implements Runnable {
 		// //System.out.print("next point: ");
 		// //nextPoint.print();
 
-		// µ±Ç°µãÍ¿É«£¬¼ì²é½á¹û
+		// å½“å‰ç‚¹æ¶‚è‰²ï¼Œæ£€æŸ¥ç»“æœ
 		int checkThisPointSolve = 0;
-		// µ±Ç°µã¸ô¶Ï£¬¼ì²é½á¹û
+		// å½“å‰ç‚¹éš”æ–­ï¼Œæ£€æŸ¥ç»“æœ
 		int checkThisPointBlock = 0;
 
-		// µ±Ç°µãÍ¿É«£¬×Óµü´ú½á¹û
+		// å½“å‰ç‚¹æ¶‚è‰²ï¼Œå­è¿­ä»£ç»“æœ
 		int childThisPointSolve = 0;
-		// µ±Ç°µã¸ô¶Ï£¬×Óµü´ú½á¹û
+		// å½“å‰ç‚¹éš”æ–­ï¼Œå­è¿­ä»£ç»“æœ
 		int childThisPointBlock = 0;
 
 		// board.printBoard();
 
 		if (Board.Status.BLANK != originStatus && !point.equals(nextPoint)) {
-			// ¸ÃµãÒÑ¾­ÉèÖÃ£¬ÇÒ»¹ÓĞÏÂµã£¬Ìø¹ı
+			// è¯¥ç‚¹å·²ç»è®¾ç½®ï¼Œä¸”è¿˜æœ‰ä¸‹ç‚¹ï¼Œè·³è¿‡
 			return calc(board, nextPoint);
 		}
 
-		// ³¢ÊÔ½â¾öµ±Ç°µã
+		// å°è¯•è§£å†³å½“å‰ç‚¹
 		board.setPointStatus(point, Board.Status.SOLVE);
 		checkThisPointSolve = board.check(point);
 
@@ -70,16 +70,16 @@ public class Calculator implements Runnable {
 		checkThisPointBlock = board.check(point);
 
 		if (Board.Result.FAIL == checkThisPointSolve && Board.Result.FAIL == checkThisPointBlock) {
-			// µ±Ç°µãÔõÃ´ÌîĞ´¶¼¼ì²âÊ§°Ü£¬ÉÏÒÆÒ»µã£¬·µ»ØÊ§°Ü
+			// å½“å‰ç‚¹æ€ä¹ˆå¡«å†™éƒ½æ£€æµ‹å¤±è´¥ï¼Œä¸Šç§»ä¸€ç‚¹ï¼Œè¿”å›å¤±è´¥
 			board.setPointStatus(point, originStatus);
 			return Board.Result.FAIL;
 		}
 
-		// ½áÊøÌõ¼ş
+		// ç»“æŸæ¡ä»¶
 		if (point.equals(nextPoint)) {
-			// µ±Ç°ÒÑ¾­ÊÇ×îºóÒ»µã
+			// å½“å‰å·²ç»æ˜¯æœ€åä¸€ç‚¹
 			if (Board.Result.SOLVED == checkThisPointSolve || Board.Result.SOLVED == checkThisPointBlock) {
-				// µ±Ç°µã×öÏàÓ¦´¦Àí¾Í¿ÉÒÔ½â¾ö
+				// å½“å‰ç‚¹åšç›¸åº”å¤„ç†å°±å¯ä»¥è§£å†³
 				board.setPointStatus(point,
 						Board.Result.SOLVED == checkThisPointSolve ? Board.Status.SOLVE : Board.Status.BLOCK);
 				System.err.println("==========Solved!!========");
@@ -96,24 +96,24 @@ public class Calculator implements Runnable {
 			}
 		}
 
-		// µ±Ç°µã²»ÊÇ×îºóµã£¬·ÖÇé¿öµü´úÏÂÒ»µã
+		// å½“å‰ç‚¹ä¸æ˜¯æœ€åç‚¹ï¼Œåˆ†æƒ…å†µè¿­ä»£ä¸‹ä¸€ç‚¹
 		if (Board.Result.FAIL != checkThisPointSolve) {
-			// µ±Ç°µãÍ¿É«Ã»ÓĞ´íÎó
+			// å½“å‰ç‚¹æ¶‚è‰²æ²¡æœ‰é”™è¯¯
 			board.setPointStatus(point, Board.Status.SOLVE);
 
-			// µü´ú´¦Àí
+			// è¿­ä»£å¤„ç†
 			childThisPointSolve = calc(board, nextPoint);
 		}
 
 		if (Board.Result.FAIL != checkThisPointBlock) {
-			// µ±Ç°µã¸ô¶ÏÃ»ÓĞ´íÎó
+			// å½“å‰ç‚¹éš”æ–­æ²¡æœ‰é”™è¯¯
 			board.setPointStatus(point, Board.Status.BLOCK);
 
-			// µü´ú´¦Àí
+			// è¿­ä»£å¤„ç†
 			childThisPointBlock = calc(board, nextPoint);
 		}
 
-		// µü´úÍê³É£¬¿ªÊ¼¼ì²é¡¢»ØÍË
+		// è¿­ä»£å®Œæˆï¼Œå¼€å§‹æ£€æŸ¥ã€å›é€€
 		board.setPointStatus(point, originStatus);
 
 		if (Board.Result.FAIL == childThisPointBlock && Board.Result.FAIL == childThisPointSolve) {
@@ -121,5 +121,4 @@ public class Calculator implements Runnable {
 		}
 		return 0;
 	}
-
 }
