@@ -9,58 +9,33 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.regex.Pattern;
 
+/**
+ * 棋盘数据对象
+ * 
+ * @author John
+ *
+ */
 public class Board {
 
 	public boolean solved = false;
 
-	public interface Status {
-		public static char BLANK = 'E';
-		public static char BLOCK = 'B';
-		public static char SOLVE = 'S';
-	}
-
-	public interface Result {
-		public static int FAIL = -1;
-		public static int PENDING = 0;
-		public static int SOLVED = 1;
-	}
-
-	// E-blank;B-block;S-solve;
-	private static final String matchSolvingStater = "[EB]*?";
-	private static final String matchSolvingEnder = "[EB]*?";
-	private static final String matchSolvingSpliter = "[EB]+?";
-	private static final String matchSolvingMarker = "[ES]";
-
-	private static final String matchSolvedStater = "B*";
-	private static final String matchSolvedEnder = "B*";
-	private static final String matchSolvedSpliter = "B+";
-	private static final String matchSolvedMarker = "S";
-
 	private char[][] boardData;// 10*5
 
-	public int getWidth() {
-		return width;
-	}
-
-	public int getHeight() {
-		return height;
-	}
-
 	private int width;// 10 columns 0-9
+
 	private int height;// 5 rows 0-4
 
 	private String[] solvingStrOfEachRow;// 5
 	private String[] solvedStrOfEachRow;// 5
+
 	private String[] solvingStrOfEachColumn;// 10
 	private String[] solvedStrOfEachColumn;// 10
-
 	private Pattern[] solvingPatternOfEachRow;// 5
 	private Pattern[] solvedPatternOfEachRow;// 5
+
 	private Pattern[] solvingPatternOfEachColumn;// 10
 	private Pattern[] solvedPatternOfEachColumn;// 10
-
 	private List<List<Integer>> rowConditions;// 5 rows;
-
 	private List<List<Integer>> columnConditions;// 10 columns;
 
 	public Board(int width, int height) {
@@ -92,28 +67,60 @@ public class Board {
 	}
 
 	/**
-	 * 设置某点的状态
+	 * 根据给定坐标，检查该点所在行、列是否匹配给定条件
 	 * 
-	 * @param x
-	 *            行坐标
-	 * @param y
-	 *            列坐标
-	 * @param mark
-	 *            'E'-未定；'B'-隔断；'S'-涂色
-	 * 
+	 * @param point
+	 *            给定点
+	 * @return -1：检查出错误；0-未检查出错误，但还未完成；1-完全ok
 	 */
-	public void setPointStatus(Point point, char mark) {
+	public int check(Point point) {
+		int x = point.getX();
+		int y = point.getY();
 
-		if (null == boardData) {
-			return;
+		int rowResult = PublicConstants.Result.PENDING;
+		int columnResult = PublicConstants.Result.PENDING;
+
+		char[] row = getRow(y);
+		char[] column = getColumn(x);
+
+		String rowStr = PublicUtils.array2String(row);
+		String columnStr = PublicUtils.array2String(column);
+
+		if (!solvingPatternOfEachRow[y].matcher(rowStr).matches()) {
+			return PublicConstants.Result.FAIL;
+		} else if (solvedPatternOfEachRow[y].matcher(rowStr).matches()) {
+			rowResult = PublicConstants.Result.SUCCESS;
 		}
-		boardData[point.getX()][point.getY()] = mark;
+
+		if (!solvingPatternOfEachColumn[x].matcher(columnStr).matches()) {
+			return PublicConstants.Result.FAIL;
+		} else if (solvedPatternOfEachColumn[x].matcher(columnStr).matches()) {
+			columnResult = PublicConstants.Result.SUCCESS;
+		}
+
+		if (PublicConstants.Result.SUCCESS == rowResult && PublicConstants.Result.SUCCESS == columnResult) {
+			return PublicConstants.Result.SUCCESS;
+		}
+		return PublicConstants.Result.PENDING;
 	}
 
-	public char getPointStatus(Point point) {
-		// System.out.println(point.getX() + " " + point.getY() + " " +
-		// this.boardData[point.getX()][point.getY()]);
-		return this.boardData[point.getX()][point.getY()];
+	/**
+	 * 根据给定列号，获取该列的棋盘所填状态数据
+	 * 
+	 * @param columnNo
+	 *            给定列号
+	 * @return 该列填写状态
+	 */
+	public char[] getColumn(int columnNo) {
+		return this.boardData[columnNo];
+	}
+
+	public List<List<Integer>> getColumnConditions() {
+		return columnConditions;
+	}
+
+	public int getHeight() {
+		return height;
 	}
 
 	/**
@@ -146,6 +153,12 @@ public class Board {
 		return new Point(x + 1, y);
 	}
 
+	public char getPointStatus(Point point) {
+		// System.out.println(point.getX() + " " + point.getY() + " " +
+		// this.boardData[point.getX()][point.getY()]);
+		return this.boardData[point.getX()][point.getY()];
+	}
+
 	/**
 	 * 根据给定行号，获取该行的棋盘所填状态数据
 	 * 
@@ -161,16 +174,13 @@ public class Board {
 		return result;
 	}
 
-	/**
-	 * 根据给定列号，获取该列的棋盘所填状态数据
-	 * 
-	 * @param columnNo
-	 *            给定列号
-	 * @return 该列填写状态
-	 */
-	public char[] getColumn(int columnNo) {
-		return this.boardData[columnNo];
+	public List<List<Integer>> getRowConditions() {
+		return rowConditions;
 	}
+
+	public int getWidth() {
+		return width;
+	};
 
 	/**
 	 * 打印当前棋盘状态。未定、隔断、涂色
@@ -179,13 +189,13 @@ public class Board {
 		for (int j = 0; j < height; j++) {
 			for (int i = 0; i < width; i++) {
 				switch (boardData[i][j]) {
-				case Status.BLANK:
+				case PublicConstants.Status.BLANK:
 					System.out.print("□");
 					break;
-				case Status.BLOCK:
+				case PublicConstants.Status.BLOCK:
 					System.out.print("x");
 					break;
-				case Status.SOLVE:
+				case PublicConstants.Status.SOLVE:
 					System.out.print("■");
 					break;
 				default:
@@ -194,163 +204,6 @@ public class Board {
 			} // end of row;
 			System.out.println();
 		}
-	}
-
-	/**
-	 * 根据给定坐标，检查该点所在行、列是否匹配给定条件
-	 * 
-	 * @param point
-	 *            给定点
-	 * @return -1：检查出错误；0-未检查出错误，但还未完成；1-完全ok
-	 */
-	public int check(Point point) {
-		int x = point.getX();
-		int y = point.getY();
-
-		int rowResult = Result.PENDING;
-		int columnResult = Result.PENDING;
-
-		char[] row = getRow(y);
-		char[] column = getColumn(x);
-
-		String rowStr = array2String(row);
-		String columnStr = array2String(column);
-
-		if (!solvingPatternOfEachRow[y].matcher(rowStr).matches()) {
-			return Result.FAIL;
-		} else if (solvedPatternOfEachRow[y].matcher(rowStr).matches()) {
-			rowResult = Result.SOLVED;
-		}
-
-		if (!solvingPatternOfEachColumn[x].matcher(columnStr).matches()) {
-			return Result.FAIL;
-		} else if (solvedPatternOfEachColumn[x].matcher(columnStr).matches()) {
-			columnResult = Result.SOLVED;
-		}
-
-		if (Result.SOLVED == rowResult && Result.SOLVED == columnResult) {
-			return Result.SOLVED;
-		}
-		return Result.PENDING;
-	};
-
-	/**
-	 * 将给定数字数组（一位整数）拼接为无分隔字符串
-	 * 
-	 * @param marks
-	 *            数字数组
-	 * @return 拼接无分隔字符串
-	 */
-	private String array2String(char[] marks) {
-		return new String(marks);
-	}
-
-	/**
-	 * 根据给定的单行\列条件，得到对应的完成匹配正则表达式
-	 * <p>
-	 * 不符合不一定错误，符合保证正确
-	 * 
-	 * @param conditions
-	 *            条件List //5 2 3 4~~
-	 * @return 完成匹配正则表达式. 对于 3 2 的输入：B*S{3}B+S{2}B*
-	 */
-	private String getSolvedMatchStr(List<Integer> conditions) {
-		if (null == conditions || 0 == conditions.size()) {
-			return "B*";
-		}
-
-		StringBuilder match = new StringBuilder();
-
-		match.append(matchSolvedStater);
-		for (Integer condition : conditions) {
-			match.append(matchSolvedMarker).append("{").append(String.valueOf(condition)).append("}");
-			match.append(matchSolvedSpliter);
-		}
-		String m = match.substring(0, match.length() - matchSolvedSpliter.length());
-
-		m = m + matchSolvedEnder;
-
-		return m;
-	}
-
-	/**
-	 * 根据给定的单行\列条件，得到对应的部分匹配正则表达式
-	 * <p>
-	 * 不符合一定错误，符合不一定正确
-	 * 
-	 * @param conditions
-	 *            条件List //5 2 3 4~~
-	 * @return 部分匹配正则表达式 for 3 2，得到 [EB]*[ES]{3}[EB]+[ES]{2}[EB]*
-	 */
-	private String getSolvingMatchStr(List<Integer> conditions) {
-		if (null == conditions || 0 == conditions.size()) {
-			return "[EB]*";
-		}
-
-		StringBuilder match = new StringBuilder();
-
-		match.append(matchSolvingStater);
-		for (Integer condition : conditions) {
-			match.append(matchSolvingMarker).append("{").append(String.valueOf(condition)).append("}");
-			match.append(matchSolvingSpliter);
-		}
-		String m = match.substring(0, match.length() - matchSolvingSpliter.length());
-
-		m = m + matchSolvingEnder;
-
-		return m;
-	}
-
-	/**
-	 * 获取给定的各行原始条件，保存并算出各行的匹配用正则表达式
-	 * 
-	 * @param rowConditions
-	 */
-	public void setRowConditions(List<List<Integer>> rowConditions) {
-		if (this.height != rowConditions.size()) {
-			return;
-		}
-		this.rowConditions = rowConditions;
-
-		for (int i = 0; i < this.height; i++) {
-			List<Integer> thisRowCondition = rowConditions.get(i);
-
-			this.solvingStrOfEachRow[i] = getSolvingMatchStr(thisRowCondition);
-			this.solvedStrOfEachRow[i] = getSolvedMatchStr(thisRowCondition);
-
-			this.solvingPatternOfEachRow[i] = Pattern.compile(this.solvingStrOfEachRow[i]);
-			this.solvedPatternOfEachRow[i] = Pattern.compile(this.solvedStrOfEachRow[i]);
-		}
-	}
-
-	/**
-	 * 获取给定的各列原始条件，保存并算出各列的匹配用正则表达式
-	 * 
-	 * @param columnConditions
-	 */
-	public void setColumnConditions(List<List<Integer>> columnConditions) {
-		if (this.width != columnConditions.size()) {
-			return;
-		}
-		this.columnConditions = columnConditions;
-
-		for (int i = 0; i < this.width; i++) {
-			List<Integer> thisColumnCondition = columnConditions.get(i);
-
-			this.solvingStrOfEachColumn[i] = getSolvingMatchStr(thisColumnCondition);
-			this.solvedStrOfEachColumn[i] = getSolvedMatchStr(thisColumnCondition);
-
-			this.solvingPatternOfEachColumn[i] = Pattern.compile(getSolvingMatchStr(thisColumnCondition));
-			this.solvedPatternOfEachColumn[i] = Pattern.compile(getSolvedMatchStr(thisColumnCondition));
-		}
-	}
-
-	public List<List<Integer>> getRowConditions() {
-		return rowConditions;
-	}
-
-	public List<List<Integer>> getColumnConditions() {
-		return columnConditions;
 	}
 
 	public void save(String path) {
@@ -364,13 +217,13 @@ public class Board {
 			for (int j = 0; j < height; j++) {
 				for (int i = 0; i < width; i++) {
 					switch (boardData[i][j]) {
-					case Status.BLANK:
+					case PublicConstants.Status.BLANK:
 						writer.write("E");
 						break;
-					case Status.BLOCK:
+					case PublicConstants.Status.BLOCK:
 						writer.write("X");
 						break;
-					case Status.SOLVE:
+					case PublicConstants.Status.SOLVE:
 						writer.write("O");
 						break;
 					default:
@@ -388,6 +241,69 @@ public class Board {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+		}
+	}
+
+	/**
+	 * 获取给定的各列原始条件，保存并算出各列的匹配用正则表达式
+	 * 
+	 * @param columnConditions
+	 */
+	public void setColumnConditions(List<List<Integer>> columnConditions) {
+		if (this.width != columnConditions.size()) {
+			return;
+		}
+		this.columnConditions = columnConditions;
+
+		for (int i = 0; i < this.width; i++) {
+			List<Integer> thisColumnCondition = columnConditions.get(i);
+
+			this.solvingStrOfEachColumn[i] = PublicUtils.getSolvingMatchStr(thisColumnCondition);
+			this.solvedStrOfEachColumn[i] = PublicUtils.getSolvedMatchStr(thisColumnCondition);
+
+			this.solvingPatternOfEachColumn[i] = Pattern.compile(PublicUtils.getSolvingMatchStr(thisColumnCondition));
+			this.solvedPatternOfEachColumn[i] = Pattern.compile(PublicUtils.getSolvedMatchStr(thisColumnCondition));
+		}
+	}
+
+	/**
+	 * 设置某点的状态
+	 * 
+	 * @param x
+	 *            行坐标
+	 * @param y
+	 *            列坐标
+	 * @param mark
+	 *            'E'-未定；'B'-隔断；'S'-涂色
+	 * 
+	 */
+	public void setPointStatus(Point point, char mark) {
+
+		if (null == boardData) {
+			return;
+		}
+		boardData[point.getX()][point.getY()] = mark;
+	}
+
+	/**
+	 * 获取给定的各行原始条件，保存并算出各行的匹配用正则表达式
+	 * 
+	 * @param rowConditions
+	 */
+	public void setRowConditions(List<List<Integer>> rowConditions) {
+		if (this.height != rowConditions.size()) {
+			return;
+		}
+		this.rowConditions = rowConditions;
+
+		for (int i = 0; i < this.height; i++) {
+			List<Integer> thisRowCondition = rowConditions.get(i);
+
+			this.solvingStrOfEachRow[i] = PublicUtils.getSolvingMatchStr(thisRowCondition);
+			this.solvedStrOfEachRow[i] = PublicUtils.getSolvedMatchStr(thisRowCondition);
+
+			this.solvingPatternOfEachRow[i] = Pattern.compile(this.solvingStrOfEachRow[i]);
+			this.solvedPatternOfEachRow[i] = Pattern.compile(this.solvedStrOfEachRow[i]);
 		}
 	}
 }

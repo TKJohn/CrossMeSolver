@@ -16,25 +16,6 @@ public class Calculator implements Runnable {
 		this.path = path;
 	}
 
-	public void run() {
-		System.out.println("start");
-		if (1 == id) {
-			Point startPoint = new Point(0, 0);
-			calc(board, startPoint);
-		} else {
-			while (!board.solved) {
-				try {
-					Thread.sleep(1000);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
-				System.out.println("----------------------" + path + "-----------------------");
-				board.printBoard();
-
-			}
-		}
-	}
-
 	private int calc(Board board, Point point) {
 		char originStatus = board.getPointStatus(point);
 		Point nextPoint = board.getNextPoint(point);
@@ -57,57 +38,58 @@ public class Calculator implements Runnable {
 
 		// board.printBoard();
 
-		if (Board.Status.BLANK != originStatus && !point.equals(nextPoint)) {
+		if (PublicConstants.Status.BLANK != originStatus && !point.equals(nextPoint)) {
 			// 该点已经设置，且还有下点，跳过
 			return calc(board, nextPoint);
 		}
 
 		// 尝试解决当前点
-		board.setPointStatus(point, Board.Status.SOLVE);
+		board.setPointStatus(point, PublicConstants.Status.SOLVE);
 		checkThisPointSolve = board.check(point);
 
-		board.setPointStatus(point, Board.Status.BLOCK);
+		board.setPointStatus(point, PublicConstants.Status.BLOCK);
 		checkThisPointBlock = board.check(point);
 
-		if (Board.Result.FAIL == checkThisPointSolve && Board.Result.FAIL == checkThisPointBlock) {
+		if (PublicConstants.Result.FAIL == checkThisPointSolve && PublicConstants.Result.FAIL == checkThisPointBlock) {
 			// 当前点怎么填写都检测失败，上移一点，返回失败
 			board.setPointStatus(point, originStatus);
-			return Board.Result.FAIL;
+			return PublicConstants.Result.FAIL;
 		}
 
 		// 结束条件
 		if (point.equals(nextPoint)) {
 			// 当前已经是最后一点
-			if (Board.Result.SOLVED == checkThisPointSolve || Board.Result.SOLVED == checkThisPointBlock) {
+			if (PublicConstants.Result.SUCCESS == checkThisPointSolve
+					|| PublicConstants.Result.SUCCESS == checkThisPointBlock) {
 				// 当前点做相应处理就可以解决
-				board.setPointStatus(point,
-						Board.Result.SOLVED == checkThisPointSolve ? Board.Status.SOLVE : Board.Status.BLOCK);
+				board.setPointStatus(point, PublicConstants.Result.SUCCESS == checkThisPointSolve
+						? PublicConstants.Status.SOLVE : PublicConstants.Status.BLOCK);
 				System.err.println("==========Solved!!========");
 				board.solved = true;
 				board.printBoard();
 				board.save(path + "_result.txt");
 				System.err.println("==========================");
 
-				board.setPointStatus(point, Board.Status.BLANK);
-				return Board.Result.SOLVED;
+				board.setPointStatus(point, PublicConstants.Status.BLANK);
+				return PublicConstants.Result.SUCCESS;
 			} else {
-				board.setPointStatus(point, Board.Status.BLANK);
-				return Board.Result.FAIL;
+				board.setPointStatus(point, PublicConstants.Status.BLANK);
+				return PublicConstants.Result.FAIL;
 			}
 		}
 
 		// 当前点不是最后点，分情况迭代下一点
-		if (Board.Result.FAIL != checkThisPointSolve) {
+		if (PublicConstants.Result.FAIL != checkThisPointSolve) {
 			// 当前点涂色没有错误
-			board.setPointStatus(point, Board.Status.SOLVE);
+			board.setPointStatus(point, PublicConstants.Status.SOLVE);
 
 			// 迭代处理
 			childThisPointSolve = calc(board, nextPoint);
 		}
 
-		if (Board.Result.FAIL != checkThisPointBlock) {
+		if (PublicConstants.Result.FAIL != checkThisPointBlock) {
 			// 当前点隔断没有错误
-			board.setPointStatus(point, Board.Status.BLOCK);
+			board.setPointStatus(point, PublicConstants.Status.BLOCK);
 
 			// 迭代处理
 			childThisPointBlock = calc(board, nextPoint);
@@ -116,9 +98,28 @@ public class Calculator implements Runnable {
 		// 迭代完成，开始检查、回退
 		board.setPointStatus(point, originStatus);
 
-		if (Board.Result.FAIL == childThisPointBlock && Board.Result.FAIL == childThisPointSolve) {
-			return Board.Result.FAIL;
+		if (PublicConstants.Result.FAIL == childThisPointBlock && PublicConstants.Result.FAIL == childThisPointSolve) {
+			return PublicConstants.Result.FAIL;
 		}
 		return 0;
+	}
+
+	public void run() {
+		System.out.println("start");
+		if (1 == id) {
+			Point startPoint = new Point(0, 0);
+			calc(board, startPoint);
+		} else {
+			while (!board.solved) {
+				try {
+					Thread.sleep(1000);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+				System.out.println("----------------------" + path + "-----------------------");
+				board.printBoard();
+
+			}
+		}
 	}
 }
