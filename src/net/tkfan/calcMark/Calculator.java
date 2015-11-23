@@ -1,4 +1,4 @@
-﻿package calcMark;
+﻿package net.tkfan.calcMark;
 
 public class Calculator implements Runnable {
 

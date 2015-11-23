@@ -1,4 +1,5 @@
-package calcMark;
+package net.tkfan.calcMark;
+
 
 public abstract class PublicConstants {
 

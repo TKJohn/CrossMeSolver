@@ -1,4 +1,4 @@
-﻿package calcMark;
+﻿package net.tkfan.calcMark;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -8,6 +8,10 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.regex.Pattern;
+
+import net.tkfan.calcMark.Point;
+import net.tkfan.calcMark.PublicConstants;
+import net.tkfan.calcMark.PublicUtils;
 
 /**
  * 棋盘数据对象
