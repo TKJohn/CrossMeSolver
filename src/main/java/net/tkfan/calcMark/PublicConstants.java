@@ -3,11 +3,11 @@ package net.tkfan.calcMark;
 public interface PublicConstants {
 
     enum JudgeResult {
-        FAIL, PENDING, SUCCESS;
+        FAIL, PENDING, SUCCESS
     }
 
     enum LineRowType {
-        LINE, ROW;
+        LINE, ROW
     }
 
     interface Status {

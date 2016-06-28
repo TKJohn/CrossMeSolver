@@ -223,8 +223,6 @@ public class Board {
         return rowConditions;
     }
 
-    ;
-
     /**
      * 获取给定的各行原始条件，保存并算出各行的匹配用正则表达式
      *
@@ -338,9 +336,9 @@ public class Board {
     /**
      * 设置某点的状态
      *
-     * @param point    行坐标
-     * @param mark    列坐标
-     * @param mark 'E'-未定；'B'-隔断；'S'-涂色
+     * @param point 行坐标
+     * @param mark  列坐标
+     * @param mark  'E'-未定；'B'-隔断；'S'-涂色
      */
     public void setPointStatus(Point point, char mark) {
 

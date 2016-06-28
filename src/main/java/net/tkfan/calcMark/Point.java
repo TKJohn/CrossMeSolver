@@ -27,9 +27,7 @@ public class Point {
         Point other = (Point) obj;
         if (x != other.x)
             return false;
-        if (y != other.y)
-            return false;
-        return true;
+        return y == other.y;
     }
 
     public int getX() {
