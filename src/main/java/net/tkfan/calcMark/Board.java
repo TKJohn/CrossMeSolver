@@ -38,8 +38,8 @@ public class Board {
     private Pattern[] solvedPatternOfEachRow;// 5
     private Pattern[] solvingPatternOfEachColumn;// 10
     private Pattern[] solvedPatternOfEachColumn;// 10
-    private SolveOfLine[] solveOfLineOfEachColumn; // 10
-    private SolveOfLine[] solveOfLineOfEachRow; // 5
+    //    private SolveOfLine[] solveOfLineOfEachColumn; // 10
+//    private SolveOfLine[] solveOfLineOfEachRow; // 5
     private List<List<Integer>> rowConditions;// 5 rows;
     private List<List<Integer>> columnConditions;// 10 columns;
 
@@ -70,55 +70,54 @@ public class Board {
         this.solvingPatternOfEachColumn = new Pattern[width];
         this.solvingPatternOfEachRow = new Pattern[height];
 
-        this.solveOfLineOfEachColumn = new SolveOfLine[width];
-        this.solveOfLineOfEachRow = new SolveOfLine[height];
+//        this.solveOfLineOfEachColumn = new SolveOfLine[width];
+//        this.solveOfLineOfEachRow = new SolveOfLine[height];
     }
 
     /**
      * 根据给定坐标，检查该点所在行、列是否匹配给定条件
      *
      * @param point 给定点
-     * @return -1：检查出错误；0-未检查出错误，但还未完成；1-完全ok
+     * @return FAIL-检查出错误；PENDING-未检查出错误，但还未完成；SUCCESS-完全ok
      */
-    public PublicConstants.JudgeResult check(Point point) {
-        int x = point.getX();
-        int y = point.getY();
-        long start = System.currentTimeMillis();
+    public JudgeResult check(Point point) {
+        int columnPosition = point.getX();
+        int rowPosition = point.getY();
 
-        PublicConstants.JudgeResult rowResult = PublicConstants.JudgeResult.PENDING;
-        PublicConstants.JudgeResult columnResult = PublicConstants.JudgeResult.PENDING;
-
-        char[] row = getRow(y);
-        char[] column = getColumn(x);
+        char[] row = getRow(rowPosition);
+        char[] column = getColumn(columnPosition);
 
         String rowStr = PublicUtils.array2String(row);
         String columnStr = PublicUtils.array2String(column);
 
-        if (!solvingPatternOfEachRow[y].matcher(rowStr).matches()) {
-            return PublicConstants.JudgeResult.FAIL;
-        } else if (solvedPatternOfEachRow[y].matcher(rowStr).matches()) {
-            rowResult = PublicConstants.JudgeResult.SUCCESS;
+        JudgeResult rowResult = JudgeBuffer.getResult(PublicConstants.LineRowType.ROW, rowPosition, rowStr);
+        if (rowResult == null) {
+            rowResult = JudgeResult.PENDING;
+            if (!solvingPatternOfEachRow[rowPosition].matcher(rowStr).matches()) {
+                rowResult = JudgeResult.FAIL;
+            } else if (solvedPatternOfEachRow[rowPosition].matcher(rowStr).matches()) {
+                rowResult = JudgeResult.SUCCESS;
+            }
+            JudgeBuffer.setResult(PublicConstants.LineRowType.ROW, rowPosition, rowStr, rowResult);
         }
 
-        if (!solvingPatternOfEachColumn[x].matcher(columnStr).matches()) {
-            return PublicConstants.JudgeResult.FAIL;
-        } else if (solvedPatternOfEachColumn[x].matcher(columnStr).matches()) {
-            columnResult = PublicConstants.JudgeResult.SUCCESS;
+        JudgeResult columnResult = JudgeBuffer.getResult(PublicConstants.LineRowType.COLUMN, columnPosition, columnStr);
+        if (columnResult == null) {
+            columnResult = JudgeResult.PENDING;
+            if (!solvingPatternOfEachColumn[columnPosition].matcher(columnStr).matches()) {
+                columnResult = JudgeResult.FAIL;
+            } else if (solvedPatternOfEachColumn[columnPosition].matcher(columnStr).matches()) {
+                columnResult = JudgeResult.SUCCESS;
+            }
+            JudgeBuffer.setResult(PublicConstants.LineRowType.COLUMN, columnPosition, columnStr, columnResult);
         }
-
-        long end = System.currentTimeMillis();
-        long costtime = end - start;
-
-        if (costtime > this.slowest) {
-            this.slowestPoint = new Point(point);
-            this.slowestColumnStr = columnStr;
-            this.slowestRowStr = rowStr;
-            this.slowest = costtime;
+        if (JudgeResult.FAIL.equals(rowResult) || JudgeResult.FAIL.equals(columnResult)) {
+            return JudgeResult.FAIL;
         }
-        if (PublicConstants.JudgeResult.SUCCESS == rowResult && PublicConstants.JudgeResult.SUCCESS == columnResult) {
-            return PublicConstants.JudgeResult.SUCCESS;
+        if (JudgeResult.SUCCESS.equals(rowResult) && JudgeResult.SUCCESS.equals(columnResult)) {
+            return JudgeResult.SUCCESS;
         }
-        return PublicConstants.JudgeResult.PENDING;
+        return JudgeResult.PENDING;
     }
 
     /**
@@ -155,14 +154,6 @@ public class Board {
             this.solvingPatternOfEachColumn[i] = Pattern.compile(PublicUtils.getSolvingMatchStr(thisColumnCondition));
             this.solvedPatternOfEachColumn[i] = Pattern.compile(PublicUtils.getSolvedMatchStr(thisColumnCondition));
 
-            // try {
-            // this.solveOfLineOfEachColumn[i] = new
-            // SolveOfLine(thisColumnCondition, this.height);
-            // logger.debug("addColumn" + i);
-            // } catch (ApplicationException e) {
-            // // TODO Auto-generated catch block
-            // e.printStackTrace();
-            // }
         }
     }
 
@@ -243,14 +234,6 @@ public class Board {
             this.solvingPatternOfEachRow[i] = Pattern.compile(this.solvingStrOfEachRow[i]);
             this.solvedPatternOfEachRow[i] = Pattern.compile(this.solvedStrOfEachRow[i]);
 
-            // try {
-            // this.solveOfLineOfEachColumn[i] = new
-            // SolveOfLine(thisRowCondition, this.width);
-            // logger.debug("addRow" + i);
-            // } catch (ApplicationException e) {
-            // // TODO Auto-generated catch block
-            // e.printStackTrace();
-            // }
         }
     }
 
@@ -280,20 +263,21 @@ public class Board {
             } // end of row;
             System.out.println();
         }
+        JudgeBuffer.printStatus();
     }
-
-    public void printSlow() {
-        logger.debug("----Slow----");
-        logger.debug("time: " + this.slowest);
-        logger.debug("Point: " + this.slowestPoint);
-        logger.debug("rowStr: " + this.slowestRowStr);
-        logger.debug("rowCondition: " + this.solvingPatternOfEachRow[this.slowestPoint.getY()]);
-
-        logger.debug("columnStr: " + this.slowestColumnStr);
-        logger.debug("columnCondition: " + this.solvingPatternOfEachColumn[this.slowestPoint.getX()]);
-
-        logger.debug("----Slow----");
-    }
+//
+//    public void printSlow() {
+//        logger.debug("----Slow----");
+//        logger.debug("time: " + this.slowest);
+//        logger.debug("Point: " + this.slowestPoint);
+//        logger.debug("rowStr: " + this.slowestRowStr);
+//        logger.debug("rowCondition: " + this.solvingPatternOfEachRow[this.slowestPoint.getY()]);
+//
+//        logger.debug("columnStr: " + this.slowestColumnStr);
+//        logger.debug("columnCondition: " + this.solvingPatternOfEachColumn[this.slowestPoint.getX()]);
+//
+//        logger.debug("----Slow----");
+//    }
 
     public void save(String path) {
         Path file = Paths.get(path);
@@ -348,48 +332,48 @@ public class Board {
         boardData[point.getX()][point.getY()] = mark;
     }
 
-    /**
-     * 得到最终解
-     */
-    public void solve() {
-        while (filterByStable()) {
-        }
+//    /**
+//     * 得到最终解
+//     */
+//    public void solve() {
+//        while (filterByStable()) {
+//        }
+//
+//    }
 
-    }
-
-    /**
-     * 使用每行每列的不变项，不断互相过滤，减少搜索范围
-     *
-     * @return 本次有消减(可以继续尝试过滤)
-     */
-    private boolean filterByStable() {
-        boolean filtered = false;
-
-        // 使用每一列的稳定解(的每一个稳定字符)，过滤处理每一行
-        for (int x = 0; x < this.width; x++) {
-            String subStableSolve = this.solveOfLineOfEachColumn[x].getStableSolve();
-            for (int y = 0; y < subStableSolve.length(); x++) {
-                char checkChar = subStableSolve.charAt(y);
-                if ('@' == checkChar || 'E' == checkChar || ' ' == checkChar)
-                    continue;
-                boolean subFiltered = this.solveOfLineOfEachRow[y].filterByCharacter(x, checkChar);
-                if (subFiltered)
-                    filtered = true;
-            }
-        }
-
-        // 使用每一行的稳定解(的每一个稳定字符)，过滤处理每一列
-        for (int y = 0; y < this.width; y++) {
-            String subStableSolve = this.solveOfLineOfEachRow[y].getStableSolve();
-            for (int x = 0; x < subStableSolve.length(); y++) {
-                char checkChar = subStableSolve.charAt(x);
-                if ('@' == checkChar || 'E' == checkChar || ' ' == checkChar)
-                    continue;
-                boolean subFiltered = this.solveOfLineOfEachColumn[x].filterByCharacter(y, checkChar);
-                if (subFiltered)
-                    filtered = true;
-            }
-        }
-        return filtered;
-    }
+//    /**
+//     * 使用每行每列的不变项，不断互相过滤，减少搜索范围
+//     *
+//     * @return 本次有消减(可以继续尝试过滤)
+//     */
+//    private boolean filterByStable() {
+//        boolean filtered = false;
+//
+//        // 使用每一列的稳定解(的每一个稳定字符)，过滤处理每一行
+//        for (int x = 0; x < this.width; x++) {
+//            String subStableSolve = this.solveOfLineOfEachColumn[x].getStableSolve();
+//            for (int y = 0; y < subStableSolve.length(); x++) {
+//                char checkChar = subStableSolve.charAt(y);
+//                if ('@' == checkChar || 'E' == checkChar || ' ' == checkChar)
+//                    continue;
+//                boolean subFiltered = this.solveOfLineOfEachRow[y].filterByCharacter(x, checkChar);
+//                if (subFiltered)
+//                    filtered = true;
+//            }
+//        }
+//
+//        // 使用每一行的稳定解(的每一个稳定字符)，过滤处理每一列
+//        for (int y = 0; y < this.width; y++) {
+//            String subStableSolve = this.solveOfLineOfEachRow[y].getStableSolve();
+//            for (int x = 0; x < subStableSolve.length(); y++) {
+//                char checkChar = subStableSolve.charAt(x);
+//                if ('@' == checkChar || 'E' == checkChar || ' ' == checkChar)
+//                    continue;
+//                boolean subFiltered = this.solveOfLineOfEachColumn[x].filterByCharacter(y, checkChar);
+//                if (subFiltered)
+//                    filtered = true;
+//            }
+//        }
+//        return filtered;
+//    }
 }

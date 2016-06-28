@@ -2,12 +2,10 @@ package net.tkfan.calcMark;
 
 public interface PublicConstants {
 
-    enum JudgeResult {
-        FAIL, PENDING, SUCCESS
-    }
+    int MAX_JUDGE_BUFFER_SIZE = 1000000;
 
     enum LineRowType {
-        LINE, ROW
+        COLUMN, ROW
     }
 
     interface Status {
