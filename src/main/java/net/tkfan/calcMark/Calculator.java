@@ -1,6 +1,11 @@
 package net.tkfan.calcMark;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class Calculator implements Runnable {
+
+    private static final Logger logger = LoggerFactory.getLogger(Calculator.class);
 
     private static Board board;
 
@@ -64,11 +69,11 @@ public class Calculator implements Runnable {
                 // 当前点做相应处理就可以解决
                 board.setPointStatus(point, JudgeResult.SUCCESS == checkThisPointSolve
                         ? PublicConstants.Status.SOLVE : PublicConstants.Status.BLOCK);
-                System.err.println("==========Solved!!========");
+                logger.info("==========Solved!!========");
                 board.solved = true;
                 board.printBoard();
                 board.save(path + "_result.txt");
-                System.err.println("==========================");
+                logger.info("==========================");
 
                 board.setPointStatus(point, PublicConstants.Status.BLANK);
                 return JudgeResult.SUCCESS;
@@ -105,7 +110,7 @@ public class Calculator implements Runnable {
     }
 
     public void run() {
-        System.out.println("start");
+        logger.info("start calc thread");
         if (1 == id) {
             Point startPoint = new Point(0, 0);
             calc(board, startPoint);
@@ -116,7 +121,7 @@ public class Calculator implements Runnable {
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-                System.out.println("----------------------" + path + "-----------------------");
+                logger.info("----------------------" + path + "-----------------------");
                 board.printBoard();
 //                board.printSlow();
             }

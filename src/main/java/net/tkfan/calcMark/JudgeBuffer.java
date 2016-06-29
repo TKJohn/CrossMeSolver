@@ -9,8 +9,8 @@ import java.util.Map;
 /**
  * 缓冲区<br>棋盘填充方式-校验结果
  *
- * @auther John
- * Created by John on 2016/6/28.
+ * @author John
+ *         Created by John on 2016/6/28.
  */
 public class JudgeBuffer {
     private static final Logger logger = LoggerFactory.getLogger(JudgeBuffer.class);
@@ -35,6 +35,6 @@ public class JudgeBuffer {
 
     public static void printStatus() {
         LRUMap map = (LRUMap) judgeBuffer;
-        logger.debug("map status {}", map.isFull());
+        logger.debug("map status size:{} isFull:{}", map.size(), map.isFull());
     }
 }

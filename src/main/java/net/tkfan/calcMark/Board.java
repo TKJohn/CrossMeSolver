@@ -137,7 +137,7 @@ public class Board {
     /**
      * 获取给定的各列原始条件，保存并算出各列的匹配用正则表达式
      *
-     * @param columnConditions
+     * @param columnConditions 各列原始条件列表
      */
     public void setColumnConditions(List<List<Integer>> columnConditions) {
         if (this.width != columnConditions.size()) {
@@ -217,7 +217,7 @@ public class Board {
     /**
      * 获取给定的各行原始条件，保存并算出各行的匹配用正则表达式
      *
-     * @param rowConditions
+     * @param rowConditions 各行原始条件
      */
     public void setRowConditions(List<List<Integer>> rowConditions) {
         if (this.height != rowConditions.size()) {
@@ -286,7 +286,6 @@ public class Board {
 
         try {
             writer = Files.newBufferedWriter(file, charset);
-
             for (int j = 0; j < height; j++) {
                 for (int i = 0; i < width; i++) {
                     switch (boardData[i][j]) {
@@ -306,13 +305,14 @@ public class Board {
                 writer.newLine();
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error("error", e);
         } finally {
             try {
-                writer.close();
+                if (null != writer) {
+                    writer.close();
+                }
             } catch (IOException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                logger.error("error", e);
             }
         }
     }
@@ -320,8 +320,7 @@ public class Board {
     /**
      * 设置某点的状态
      *
-     * @param point 行坐标
-     * @param mark  列坐标
+     * @param point 点坐标
      * @param mark  'E'-未定；'B'-隔断；'S'-涂色
      */
     public void setPointStatus(Point point, char mark) {
